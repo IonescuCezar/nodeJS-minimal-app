@@ -9,7 +9,10 @@ const app = express();
 // connect to mongodb
 const dbURI = 'mongodb+srv://<user_id>:<password>@cluster0.ox1bw.mongodb.net/cluster0?retryWrites=true&w=majority';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => app.listen(3000))
+  .then((result) => {
+    app.listen(3000)
+    console.log('Up & Running');
+  })
   .catch((err) => console.log(err));
   
 // register app engine
@@ -49,6 +52,29 @@ app.post('/blogs', (req, res) => {
       res.redirect('/blogs');
     })
     .catch((err) => {
+      console.log(err);
+    })
+})
+
+app.get('/blogs/:id', (req, res) => {
+  const id = req.params.id;
+  Blog.findById(id)
+    .then(result => {
+      res.render('details', { blog: result, title: 'Blog Details' });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+})
+
+app.delete('/blogs/:id', (req, res) => {
+  const id = req.params.id;
+
+  Blog.findByIdAndDelete(id)
+    .then(result => {
+      res.json({ redirect: '/blogs' });
+    })
+    .catch(err => {
       console.log(err);
     })
 })
